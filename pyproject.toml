@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mek-sweet"
+version = "0.1.0"
+description = "Single-agent engagement harness with integrated toolkits and deterministic flows, powered by llama-cpp-agent"
+
+readme = "README.md"
+license = { text = "MIT" }
+dependencies = [
+    "llama-cpp-python>=0.2.60",
+    "pydantic>=2.5.3",
+    "requests>=2.31.0",
+    "docstring_parser",
+    "aiohttp",
+]
+
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+authors = [
+    { name = "Mek-Sweet Contributors", email = "contact@mek-sweet.dev" },
+    { name = "Maximilian Winter (llama-cpp-agent)", email = "maximilian.winter.91@gmail.com" },
+]
+
+[project.optional-dependencies]
+memory = ["chromadb", "SQLAlchemy", "numpy", "scipy"]
+rag = ["ragatouille"]
+vllm = ["openai", "transformers", "sentencepiece", "protobuf"]
+groq = ["groq"]
+web-search = ["duckduckgo-search", "trafilatura", "lxml-html-clean", "lxml", "googlesearch-python", "beautifulsoup4", "readability-lxml"]
+all = [
+    "chromadb", "SQLAlchemy", "numpy", "scipy",
+    "ragatouille",
+    "openai", "transformers", "sentencepiece", "protobuf",
+    "groq",
+    "duckduckgo-search", "trafilatura", "lxml-html-clean", "lxml", "googlesearch-python", "beautifulsoup4", "readability-lxml",
+]
+
+[project.urls]
+Homepage = "https://github.com/gravermistakes/mek-sweet"
+Repository = "https://github.com/gravermistakes/mek-sweet"
+"Bug Tracker" = "https://github.com/gravermistakes/mek-sweet/issues"
+Documentation = "https://github.com/gravermistakes/mek-sweet/wiki"
+
+[project.keywords]
+keywords = ["llm", "agent", "ai", "framework", "llama-cpp"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+mek_sweet = ["py.typed"]
