@@ -126,11 +126,15 @@ class EngagementHarness:
         self.agent = MekSweetAgent(config)
 
     def register_flow(self, flow_name: str, steps: List[Callable]) -> None:
-        """Register a deterministic flow."""
+        """Register steps of the form step(current_value, agent) -> next_value.
+
+        A step may call agent.run itself; the harness does not call the model
+        implicitly. This matches DeterministicFlow's callable contract.
+        """
         self.flows[flow_name] = FlowDefinition(flow_name, steps)
 
     def execute_flow(self, flow_name: str, initial_task: str) -> Dict[str, Any]:
-        """Execute a registered flow."""
+        """Execute registered steps in sequence and stop on failure."""
         if flow_name not in self.flows:
             raise ValueError(f"Flow '{flow_name}' not registered")
 
@@ -142,20 +146,28 @@ class EngagementHarness:
         current_input = initial_task
 
         for step in flow.steps:
-            result = self.agent.run(current_input)
-            results.append(result)
-
-            if not result["success"]:
+            try:
+                result = step(current_input, self.agent)
+            except Exception as exc:
                 return {
                     "flow": flow_name,
                     "success": False,
                     "completed_steps": len(results),
-                    "error": result.get("error"),
+                    "error": str(exc),
                     "results": results,
                 }
 
-            # Use response as input to next step
-            current_input = result["response"]
+            if isinstance(result, dict) and result.get("success") is False:
+                return {
+                    "flow": flow_name,
+                    "success": False,
+                    "completed_steps": len(results),
+                    "error": result.get("error", "Step returned failure"),
+                    "results": results,
+                }
+
+            results.append(result)
+            current_input = result
 
         return {
             "flow": flow_name,
